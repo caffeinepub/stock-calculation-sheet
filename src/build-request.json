@@ -1,0 +1,67 @@
+{
+  "kind": "build_request",
+  "title": "Fix 3-decimal quantity input behavior and ensure print fits on a single A5 page",
+  "priority": "high",
+  "requirements": [
+    {
+      "id": "REQ-17",
+      "text": "Fix quantity/weight number entry so users can input values naturally while the app still enforces and displays exactly three decimal places (0.000) across all quantity fields and totals.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "number format is wrong\nmake it user input .3 decimal places"
+        ]
+      },
+      "acceptanceCriteria": [
+        "In all quantity cells (Opening Stock, Purchase, Sales, Suspense), the user can type without the input constantly reformatting mid-edit (e.g., typing \"1.\", \".5\", \"10.2\" is possible during editing).",
+        "When a quantity input loses focus (or on explicit commit), the stored value is normalized and the displayed value becomes exactly 3 decimals (e.g., \"1\" -> \"1.000\", \"1.2\" -> \"1.200\", \"1.23456\" -> \"1.235\").",
+        "Totals displayed in section footers and in Final Calculation remain consistent with the underlying numeric values and always display exactly three decimals.",
+        "Invalid/empty quantity input is handled safely (no NaN shown); it resolves to 0.000 after commit while preserving a usable typing experience."
+      ]
+    },
+    {
+      "id": "REQ-18",
+      "text": "Fix the print layout so the entire Stock Calculation Sheet (all four editable sections plus the Final Calculation section) prints onto a single A5 page with clean spacing and no content cut off or pushed to a second page.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "and the print setting which you have done is trash \n(i want the whole table content inin one single a5 sheet)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Printing uses A5 paper size and produces exactly one page under normal browser print dialogs (Chrome/Edge) without requiring user scaling settings.",
+        "All sections are fully visible on the single printed page: Opening Stock, Purchase, Sales, Suspense tables (including their totals rows) and the Final Calculation card; no table rows or totals are clipped.",
+        "Print-only scaling/shrinking (if used) affects only print output and does not change the on-screen layout.",
+        "No unwanted page breaks occur inside any of the four tables or inside the Final Calculation section."
+      ]
+    }
+  ],
+  "constraints": [
+    "Frontend files under frontend/src/components/ui and the immutable hook paths listed in SYSTEM_CONTEXT must not be edited; compose them instead.",
+    "Keep all changes within the existing single React frontend; do not introduce new backend services or external dependencies."
+  ],
+  "nonGoals": [
+    "Redesigning the app beyond what is necessary to correct numeric input behavior and A5 single-page printing.",
+    "Adding new sheet sections, new calculations, or changing the existing persistence model."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

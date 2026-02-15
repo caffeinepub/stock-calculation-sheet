@@ -1,0 +1,56 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Fix 3-decimal quantity input UX and ensure single-page A5 print output",
+  "requirements": [
+    {
+      "id": "REQ-17",
+      "summary": "Make quantity inputs editable without mid-typing reformatting while normalizing and displaying exactly 3 decimals on commit across all sections and totals.",
+      "acceptanceCriteria": [
+        "In all quantity cells (Opening Stock, Purchase, Sales, Suspense), the user can type without the input constantly reformatting mid-edit (e.g., typing \"1.\", \".5\", \"10.2\" is possible during editing).",
+        "When a quantity input loses focus (or on explicit commit), the stored value is normalized and the displayed value becomes exactly 3 decimals (e.g., \"1\" -> \"1.000\", \"1.2\" -> \"1.200\", \"1.23456\" -> \"1.235\").",
+        "Totals displayed in section footers and in Final Calculation remain consistent with the underlying numeric values and always display exactly three decimals.",
+        "Invalid/empty quantity input is handled safely (no NaN shown); it resolves to 0.000 after commit while preserving a usable typing experience."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/numberFormat.ts",
+          "operation": "modify",
+          "description": "Extend numeric helpers to support a smooth 3-decimal input workflow: add safe \"intermediate\" decimal validation for user typing (e.g., allow \"\", \".\", \"1.\", \".5\"), and add a commit/normalize helper that converts to a finite number, rounds to 3 decimals, and guarantees formatting compatibility with formatNumber (toFixed(3))."
+        },
+        {
+          "path": "frontend/src/components/EditableSheetTable.tsx",
+          "operation": "modify",
+          "description": "Refactor quantity cell editing to avoid reformatting while the user types: keep a local string edit state per cell (or per row) for quantity fields, update that string onChange, and commit onBlur/Enter by normalizing to a 3-decimal numeric value (invalid/empty -> 0). Ensure the rendered value uses the raw edit string during focus and uses formatNumber(row.quantity) after commit, so totals and stored values remain numeric and consistent."
+        },
+        {
+          "path": "frontend/src/pages/StockSheetPage.tsx",
+          "operation": "modify",
+          "description": "Verify all displayed totals and section totals continue to use formatNumber on the numeric totals, and ensure any quantity-related props/columns remain consistent with the new commit-based input behavior (no NaN propagation, always 3-decimal display for totals)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-18",
+      "summary": "Adjust print-only styling and layout so the full Stock Calculation Sheet prints on exactly one A5 page without clipping or unwanted page breaks.",
+      "acceptanceCriteria": [
+        "Printing uses A5 paper size and produces exactly one page under normal browser print dialogs (Chrome/Edge) without requiring user scaling settings.",
+        "All sections are fully visible on the single printed page: Opening Stock, Purchase, Sales, Suspense tables (including their totals rows) and the Final Calculation card; no table rows or totals are clipped.",
+        "Print-only scaling/shrinking (if used) affects only print output and does not change the on-screen layout.",
+        "No unwanted page breaks occur inside any of the four tables or inside the Final Calculation section."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Tighten and harden A5 print CSS to reliably fit on a single page: keep @page size A5; override any container/max-width/padding in print to prevent horizontal overflow; reduce print paddings/margins/gaps where needed; enforce no-break rules for each section card, tables, totals rows, and final calculation; and apply print-only scaling (e.g., zoom/transform) only within @media print so on-screen layout is unchanged."
+        },
+        {
+          "path": "frontend/src/pages/StockSheetPage.tsx",
+          "operation": "modify",
+          "description": "Add/adjust a print-specific wrapper class around the sheet content (grid + final calculation) to give the print stylesheet a single, reliable hook for one-page A5 fitting (e.g., controlling print width, spacing, and any print-only scale). Ensure this wiring affects only print output."
+        }
+      ]
+    }
+  ]
+}

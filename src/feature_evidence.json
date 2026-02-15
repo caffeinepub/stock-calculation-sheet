@@ -1,0 +1,46 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-fix-quantity-weight-number-entry-so-users-can-input-values-naturally-while-the-app-still-enforces-and-displays-exactly-three-decimal-places-0-000-across-all-quantity-fields-and-totals",
+      "featureTitle": "Fix quantity/weight number entry so users can input values naturally while the app still enforces and displays exactly three decimal places (0.000) across all quantity fields and totals.",
+      "files": [
+        "frontend/src/components/EditableSheetTable.tsx",
+        "frontend/src/pages/StockSheetPage.tsx",
+        "frontend/src/utils/numberFormat.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-17"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-fix-the-print-layout-so-the-entire-stock-calculation-sheet-all-four-editable-sections-plus-the-final-calculation-section-prints-onto-a-single-a5-page-with-clean-spacing-and-no-content-cut-off-or-pushed-to-a-second-page",
+      "featureTitle": "Fix the print layout so the entire Stock Calculation Sheet (all four editable sections plus the Final Calculation section) prints onto a single A5 page with clean spacing and no content cut off or pushed to a second page.",
+      "files": [
+        "frontend/src/index.css",
+        "frontend/src/pages/StockSheetPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-18"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

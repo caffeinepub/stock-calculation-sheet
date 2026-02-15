@@ -1,0 +1,230 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 9,
+  "summary": "Build a simple responsive web app called \"Stock Calculation Sheet\" that mirrors an Excel-style stock calculator with 5 editable sections, automatic totals, closing stock calculation, 3-decimal quantity formatting, and a login system.",
+  "architectural_notes": [
+    "All quantity/weight inputs and displayed totals should use fixed 3-decimal formatting (0.000).",
+    "Totals and closing stock must recalculate automatically when any row value changes.",
+    "Layout should be responsive and visually similar to a simple Excel sheet.",
+    "Printing should use print-only CSS to force a single-page A5 output (e.g., @page size A5, controlled margins) and scale/layout (side-by-side tables with manageable gaps) so all content fits on one page without changing the normal on-screen layout.",
+    "Quantity/weight inputs must allow user entry and display values to exactly 3 decimal places (0.000) consistently across all fields and totals."
+  ],
+  "known_issues": [
+    "Totals below each section are not visible because the totals text color is white; change totals text to black (or otherwise ensure sufficient contrast).",
+    "Number formatting is incorrect; inputs and displayed values are not consistently using 3-decimal (0.000) formatting as required.",
+    "Current print layout is unacceptable; the full table content is not fitting onto a single A5 sheet as required."
+  ],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-implement-an-internet-identity-login-gate-so-only-authenticated-users-can-access-the-stock-calculation-sheet-app",
+      "title": "Implement an Internet Identity login gate so only authenticated users can access the Stock Calculation Sheet app.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-the-main-stock-calculation-sheet-page-with-exactly-five-sections-opening-stock-purchase-sales-suspense-and-final-calculation-laid-out-in-a-clean-excel-like-responsive-ui",
+      "title": "Create the main 'Stock Calculation Sheet' page with exactly five sections: Opening Stock, Purchase, Sales, Suspense, and Final Calculation, laid out in a clean, Excel-like, responsive UI.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-opening-stock-section-provide-an-editable-table-with-columns-item-name-and-weight-quantity-allow-adding-rows-and-editing-values-and-show-the-total-opening-stock-at-the-bottom-initialize-with-7-default-rows-where-each-quantity-is-10-000-and-total-equals-70-000",
+      "title": "Opening Stock section: provide an editable table with columns 'Item Name' and 'Weight / Quantity', allow adding rows and editing values, and show the total Opening Stock at the bottom. Initialize with 7 default rows where each quantity is 10.000 and total equals 70.000.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-purchase-section-provide-an-editable-table-with-columns-party-name-and-quantity-allow-adding-editing-rows-and-show-total-purchase-at-the-bottom-initialize-with-10-default-rows-where-each-quantity-is-1-000-and-total-equals-10-000",
+      "title": "Purchase section: provide an editable table with columns 'Party Name' and 'Quantity', allow adding/editing rows, and show total Purchase at the bottom. Initialize with 10 default rows where each quantity is 1.000 and total equals 10.000.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-sales-section-provide-an-editable-table-with-columns-party-name-and-quantity-allow-adding-editing-rows-and-show-total-sales-at-the-bottom-initialize-with-10-default-rows-where-each-quantity-is-1-000-and-total-equals-10-000",
+      "title": "Sales section: provide an editable table with columns 'Party Name' and 'Quantity', allow adding/editing rows, and show total Sales at the bottom. Initialize with 10 default rows where each quantity is 1.000 and total equals 10.000.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-suspense-section-provide-an-editable-table-with-columns-party-name-and-quantity-allow-adding-editing-rows-and-show-total-suspense-at-the-bottom-initialize-with-10-default-rows-where-each-quantity-is-1-000-and-total-equals-10-000",
+      "title": "Suspense section: provide an editable table with columns 'Party Name' and 'Quantity', allow adding/editing rows, and show total Suspense at the bottom. Initialize with 10 default rows where each quantity is 1.000 and total equals 10.000.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-final-calculation-section-automatically-compute-and-display-opening-purchase-sales-suspense-and-closing-stock-where-closing-stock-opening-stock-purchase-sales-suspense-and-update-immediately-when-any-input-number-changes",
+      "title": "Final Calculation section: automatically compute and display Opening, Purchase, Sales, Suspense, and Closing Stock where Closing Stock = Opening Stock + Purchase - Sales - Suspense, and update immediately when any input number changes.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-enforce-3-decimal-0-000-formatting-for-weight-quantity-values-throughout-the-app-inputs-accept-numeric-values-and-the-ui-consistently-displays-numbers-to-exactly-three-decimal-places",
+      "title": "Enforce 3-decimal (0.000) formatting for weight/quantity values throughout the app: inputs accept numeric values and the UI consistently displays numbers to exactly three decimal places.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-wire-the-frontend-to-the-backend-using-react-query-so-that-after-login-the-app-loads-the-user-s-persisted-sheet-state-and-changes-are-saved-back-to-the-backend-with-a-simple-reliable-save-behavior",
+      "title": "Wire the frontend to the backend using React Query so that after login the app loads the user's persisted sheet state, and changes are saved back to the backend with a simple, reliable save behavior.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-simple-consistent-visual-theme-suitable-for-an-excel-like-sheet-light-background-subtle-grid-borders-clear-typography-and-one-restrained-accent-color-avoid-blue-purple-used-consistently-across-headings-and-totals",
+      "title": "Apply a simple, consistent visual theme suitable for an Excel-like sheet: light background, subtle grid/borders, clear typography, and one restrained accent color (avoid blue/purple) used consistently across headings and totals.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-user-triggered-print-action-on-the-stock-calculation-sheet-page-that-prints-the-full-sheet-all-four-editable-sections-and-the-final-calculation-in-a-clean-paper-friendly-layout",
+      "title": "Add a user-triggered Print action on the Stock Calculation Sheet page that prints the full sheet (all four editable sections and the Final Calculation) in a clean, paper-friendly layout.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-ui-so-that-the-totals-shown-at-the-bottom-of-each-section-opening-stock-purchase-sales-suspense-are-clearly-visible-by-using-a-dark-black-text-color-or-otherwise-ensuring-sufficient-contrast-on-the-current-background",
+      "title": "Fix the UI so that the totals shown at the bottom of each section (Opening Stock, Purchase, Sales, Suspense) are clearly visible by using a dark/black text color (or otherwise ensuring sufficient contrast on the current background).",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-print-styling-so-that-clicking-print-prints-the-entire-stock-calculation-sheet-content-opening-stock-purchase-sales-suspense-and-final-calculation-onto-a-single-a5-page-by-forcing-a5-paper-size-and-applying-print-only-scaling-shrinking-as-needed-without-affecting-the-on-screen-layout",
+      "title": "Update print styling so that clicking \"Print\" prints the entire Stock Calculation Sheet content (Opening Stock, Purchase, Sales, Suspense, and Final Calculation) onto a single A5 page by forcing A5 paper size and applying print-only scaling/shrinking as needed (without affecting the on-screen layout).",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-adjust-the-print-only-layout-to-arrange-the-four-editable-table-sections-opening-stock-purchase-sales-suspense-side-by-side-or-in-a-reordered-grid-with-manageable-gaps-between-them-optimized-specifically-to-help-everything-fit-on-one-a5-page",
+      "title": "Adjust the print-only layout to arrange the four editable table sections (Opening Stock, Purchase, Sales, Suspense) side-by-side (or in a reordered grid) with manageable gaps between them, optimized specifically to help everything fit on one A5 page.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-quantity-weight-number-entry-so-users-can-input-values-naturally-while-the-app-still-enforces-and-displays-exactly-three-decimal-places-0-000-across-all-quantity-fields-and-totals",
+      "title": "Fix quantity/weight number entry so users can input values naturally while the app still enforces and displays exactly three decimal places (0.000) across all quantity fields and totals.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-print-layout-so-the-entire-stock-calculation-sheet-all-four-editable-sections-plus-the-final-calculation-section-prints-onto-a-single-a5-page-with-clean-spacing-and-no-content-cut-off-or-pushed-to-a-second-page",
+      "title": "Fix the print layout so the entire Stock Calculation Sheet (all four editable sections plus the Final Calculation section) prints onto a single A5 page with clean spacing and no content cut off or pushed to a second page.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Create login system for the app",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Opening Stock section: editable table (Item Name, Weight/Quantity), show total at bottom, default 7 rows qty 10 each (total 70)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Purchase section: editable table (Party Name, Quantity), show total, default 10 rows qty 1 each (total 10)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Sales section: editable table (Party Name, Quantity), show total, default 10 rows qty 1 each (total 10)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Suspense section: editable table (Party Name, Quantity), show total, default 10 rows qty 1 each (total 10)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Final Calculation section: auto-calculate and display Opening, Purchase, Sales, Suspense, and Closing Stock = Opening + Purchase - Sales - Suspense; update automatically on changes",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "UI/UX: clean simple Excel-like layout and responsive design",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Enforce 3-decimal (0.000) formatting for weight/quantity values throughout the app",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Persist each authenticated user's sheet data (all four tables) in the Motoko backend keyed by the user's Principal, with endpoints to load the current sheet and save updates. On first use (no saved state), return the specified defaults.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Add a print function to print the Stock Calculation Sheet",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Print layout: fit all sheet contents onto a single A5 page when printing, arranging the tables side-by-side (or otherwise reordered) with manageable gaps, using print-specific CSS (A5 @page + scaling) without affecting on-screen layout",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Build and deploy the updated application so the new A5 single-page print layout and side-by-side print arrangement are live.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Stock Calculation Sheet",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

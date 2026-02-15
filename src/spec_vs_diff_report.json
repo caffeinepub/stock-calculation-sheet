@@ -1,0 +1,25 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-15T09:41:12.407Z",
+  "summary": "Diff implements smoother 3-decimal quantity editing via intermediate-string state with commit-on-blur/Enter normalization, and adds extensive A5-focused print CSS (A5 @page, print-only overrides, hiding controls, compact sizing) aimed at fitting the whole sheet on one printed page.",
+  "missing_requirements": [],
+  "hallucinated_features": [
+    {
+      "description": "Allowing negative intermediate quantity inputs (e.g., \"-\" and \"-.\") during editing.",
+      "reason": "REQ-17 specifies natural decimal entry patterns like \"1.\", \".5\", \"10.2\" but does not request negative quantities; the diff explicitly permits negative intermediate states.",
+      "evidence": [
+        "frontend/src/utils/numberFormat.ts"
+      ]
+    }
+  ],
+  "confidence": 0.72,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/src/components/EditableSheetTable.tsx",
+    "frontend/src/index.css",
+    "frontend/src/pages/StockSheetPage.tsx",
+    "frontend/src/utils/numberFormat.ts",
+    "project_state.json"
+  ]
+}
