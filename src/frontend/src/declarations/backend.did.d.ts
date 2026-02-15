@@ -43,6 +43,7 @@ export interface Skill {
   'associatedAbility' : string,
   'isProficient' : boolean,
 }
+export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
@@ -50,11 +51,21 @@ export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'getAllSheets' : ActorMethod<[], Array<[Principal, CharacterSheet]>>,
+  'getAllSnapshots' : ActorMethod<
+    [],
+    Array<[Principal, Array<[string, CharacterSheet]>]>
+  >,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getSnapshotDates' : ActorMethod<[], Array<string>>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'isCharacterSheetSaved' : ActorMethod<[], boolean>,
   'loadSheet' : ActorMethod<[], CharacterSheet>,
+  'loadSnapshot' : ActorMethod<[string], [] | [CharacterSheet]>,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'saveSheet' : ActorMethod<[CharacterSheet], undefined>,
+  'saveSnapshot' : ActorMethod<[string, CharacterSheet], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

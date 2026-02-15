@@ -1,54 +1,76 @@
 {
   "kind": "build_request",
-  "title": "Fix 3-decimal quantity input behavior and ensure print fits on a single A5 page",
+  "title": "Fix Save persistence and add date-based sheet history",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-17",
-      "text": "Fix quantity/weight number entry so users can input values naturally while the app still enforces and displays exactly three decimal places (0.000) across all quantity fields and totals.",
-      "target": "frontend",
+      "id": "REQ-19",
+      "text": "Fix the Stock Calculation Sheet Save behavior so that clicking the Save button persists the currently edited sheet for the logged-in user in the Motoko backend (not localStorage), and reloading the page restores the saved data.",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-20"
         ],
         "quotes": [
-          "number format is wrong\nmake it user input .3 decimal places"
+          "data is not been saved when i click on the save buttuon"
         ]
       },
       "acceptanceCriteria": [
-        "In all quantity cells (Opening Stock, Purchase, Sales, Suspense), the user can type without the input constantly reformatting mid-edit (e.g., typing \"1.\", \".5\", \"10.2\" is possible during editing).",
-        "When a quantity input loses focus (or on explicit commit), the stored value is normalized and the displayed value becomes exactly 3 decimals (e.g., \"1\" -> \"1.000\", \"1.2\" -> \"1.200\", \"1.23456\" -> \"1.235\").",
-        "Totals displayed in section footers and in Final Calculation remain consistent with the underlying numeric values and always display exactly three decimals.",
-        "Invalid/empty quantity input is handled safely (no NaN shown); it resolves to 0.000 after commit while preserving a usable typing experience."
+        "After editing any values and clicking Save, refreshing the page keeps the saved values (no reset to defaults).",
+        "Saving is scoped to the authenticated Internet Identity Principal (different users do not see each other’s data).",
+        "Frontend no longer uses localStorage as the primary persistence layer for sheet save/load.",
+        "If the backend save call fails, the UI shows an English error message and does not silently succeed."
       ]
     },
     {
-      "id": "REQ-18",
-      "text": "Fix the print layout so the entire Stock Calculation Sheet (all four editable sections plus the Final Calculation section) prints onto a single A5 page with clean spacing and no content cut off or pushed to a second page.",
-      "target": "frontend",
+      "id": "REQ-20",
+      "text": "Add backend support for date-based Stock Calculation Sheet snapshots per user: save and load a sheet for a specific date, and list the dates that have saved data for the current user.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-20"
         ],
         "quotes": [
-          "and the print setting which you have done is trash \n(i want the whole table content inin one single a5 sheet)"
+          "need a way to go back on dates and access that days data"
         ]
       },
       "acceptanceCriteria": [
-        "Printing uses A5 paper size and produces exactly one page under normal browser print dialogs (Chrome/Edge) without requiring user scaling settings.",
-        "All sections are fully visible on the single printed page: Opening Stock, Purchase, Sales, Suspense tables (including their totals rows) and the Final Calculation card; no table rows or totals are clipped.",
-        "Print-only scaling/shrinking (if used) affects only print output and does not change the on-screen layout.",
-        "No unwanted page breaks occur inside any of the four tables or inside the Final Calculation section."
+        "Backend exposes methods to: (1) save a Stock Calculation Sheet for a given date, (2) load a Stock Calculation Sheet for a given date, and (3) list available saved dates for the caller.",
+        "Dates are represented as a stable, text-based key (e.g., ISO-like 'YYYY-MM-DD') and are stored per Principal.",
+        "If no saved data exists for a requested date, backend returns the default Stock Calculation Sheet state (same defaults the frontend currently uses).",
+        "Data survives canister upgrades (use stable state + upgrade hooks as needed under the single-actor architecture)."
+      ]
+    },
+    {
+      "id": "REQ-21",
+      "text": "Add a date selector to the Stock Calculation Sheet page so the user can navigate to a specific date, load that date’s saved sheet, edit it, and save updates back to that same selected date.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-20"
+        ],
+        "quotes": [
+          "need a way to go back on dates and access that days data"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The page provides a clear date selection control (English labels) that defaults to today’s date.",
+        "Changing the selected date reloads the sheet data for that date from the backend and updates all four editable sections and the Final Calculation accordingly.",
+        "Clicking Save saves the currently displayed sheet to the currently selected date (not always to “today”).",
+        "The UI indicates loading/saving states appropriately while switching dates and while saving."
       ]
     }
   ],
   "constraints": [
-    "Frontend files under frontend/src/components/ui and the immutable hook paths listed in SYSTEM_CONTEXT must not be edited; compose them instead.",
-    "Keep all changes within the existing single React frontend; do not introduce new backend services or external dependencies."
+    "Respect the Internet Computer single-actor backend architecture; keep all Motoko logic in backend/main.mo.",
+    "Do not modify frontend immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui.",
+    "All user-facing text added/changed must be in English."
   ],
   "nonGoals": [
-    "Redesigning the app beyond what is necessary to correct numeric input behavior and A5 single-page printing.",
-    "Adding new sheet sections, new calculations, or changing the existing persistence model."
+    "Do not add third-party auth providers (only Internet Identity).",
+    "Do not add real-time sync or collaboration features.",
+    "Do not implement external database storage (use canister stable storage only).",
+    "Do not change existing print/A5 layout behavior except where needed to accommodate the new date selector in the non-print UI."
   ],
   "imageRequirements": {
     "required": [],

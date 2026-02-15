@@ -1,54 +1,65 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T09:41:12.409Z",
+  "generatedAt": "2026-02-15T13:58:17.413Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 2,
+    "total": 3,
     "implemented": 2,
     "items": [
       {
-        "id": "REQ-17",
-        "summary": "Fix quantity/weight number entry so users can input values naturally while the app still enforces and displays exactly three decimal places (0.000) across all quantity fields and totals.",
+        "id": "REQ-19",
+        "summary": "Fix the Stock Calculation Sheet Save behavior so that clicking the Save button persists the currently edited sheet for the logged-in user in the Motoko backend (not localStorage), and reloading the page restores the saved data.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/utils/numberFormat.ts",
-          "frontend/src/components/EditableSheetTable.tsx",
+          "frontend/src/hooks/useStockSheet.ts",
           "frontend/src/pages/StockSheetPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/utils/numberFormat.ts",
-          "frontend/src/components/EditableSheetTable.tsx",
+          "frontend/src/hooks/useStockSheet.ts",
           "frontend/src/pages/StockSheetPage.tsx"
         ]
       },
       {
-        "id": "REQ-18",
-        "summary": "Fix the print layout so the entire Stock Calculation Sheet (all four editable sections plus the Final Calculation section) prints onto a single A5 page with clean spacing and no content cut off or pushed to a second page.",
+        "id": "REQ-20",
+        "summary": "Add backend support for date-based Stock Calculation Sheet snapshots per user: save and load a sheet for a specific date, and list the dates that have saved data for the current user.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-21",
+        "summary": "Add a date selector to the Stock Calculation Sheet page so the user can navigate to a specific date, load that date’s saved sheet, edit it, and save updates back to that same selected date.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/index.css",
+          "frontend/src/utils/dateKey.ts",
+          "frontend/src/hooks/useStockSheet.ts",
           "frontend/src/pages/StockSheetPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/index.css",
+          "frontend/src/utils/dateKey.ts",
+          "frontend/src/hooks/useStockSheet.ts",
           "frontend/src/pages/StockSheetPage.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/EditableSheetTable.tsx",
-    "frontend/src/index.css",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useStockSheet.ts",
     "frontend/src/pages/StockSheetPage.tsx",
-    "frontend/src/utils/numberFormat.ts",
+    "frontend/src/utils/dateKey.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

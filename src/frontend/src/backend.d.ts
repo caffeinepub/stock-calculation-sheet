@@ -34,6 +34,9 @@ export interface AbilityScores {
     constitution: bigint;
     intelligence: bigint;
 }
+export interface UserProfile {
+    name: string;
+}
 export interface CharacterSheet {
     combatStats: CombatStats;
     inventory: Array<Item>;
@@ -48,9 +51,16 @@ export enum UserRole {
 export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     getAllSheets(): Promise<Array<[Principal, CharacterSheet]>>;
+    getAllSnapshots(): Promise<Array<[Principal, Array<[string, CharacterSheet]>]>>;
+    getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getSnapshotDates(): Promise<Array<string>>;
+    getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     isCharacterSheetSaved(): Promise<boolean>;
     loadSheet(): Promise<CharacterSheet>;
+    loadSnapshot(date: string): Promise<CharacterSheet | null>;
+    saveCallerUserProfile(profile: UserProfile): Promise<void>;
     saveSheet(sheet: CharacterSheet): Promise<void>;
+    saveSnapshot(date: string, sheet: CharacterSheet): Promise<void>;
 }

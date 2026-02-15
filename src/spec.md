@@ -1,11 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Improve quantity/weight entry to support natural typing while enforcing 3-decimal formatting, and ensure the full Stock Calculation Sheet prints cleanly on a single A5 page.
+**Goal:** Make the Stock Calculation Sheet reliably save/load per authenticated user via the Motoko backend (not localStorage) and add date-based sheet history with a date selector.
 
 **Planned changes:**
-- Update all quantity/weight inputs (Opening Stock, Purchase, Sales, Suspense) to allow free-form editing without mid-typing reformatting, then normalize on commit/blur to exactly three decimals.
-- Ensure all totals (section footers and Final Calculation) remain numerically consistent and always display with three decimals; treat invalid/empty inputs as 0.000 after commit without showing NaN.
-- Adjust print-only styles to force A5 single-page output for the entire sheet (all four tables + Final Calculation) with clean spacing, no clipping, and no internal page breaks, without affecting on-screen layout.
+- Update Stock Calculation Sheet Save/Load to persist the currently edited sheet in the Motoko backend scoped to the logged-in Internet Identity Principal, and restore saved values on page reload.
+- Add backend support for per-user, date-keyed sheet snapshots: save for a given date, load for a given date, and list available saved dates; ensure data survives canister upgrades via stable storage.
+- Add a date selector on the Stock Calculation Sheet page (defaults to today) that loads the selected date’s sheet from the backend; Save writes back to the currently selected date; show loading/saving states and an English error message if saving fails.
 
-**User-visible outcome:** Users can enter quantities naturally (including partial decimals) and see values/totals consistently formatted to 0.000 after committing edits, and printing produces exactly one A5 page containing the full sheet without cut-offs or unwanted page breaks.
+**User-visible outcome:** Users can pick a date to view/edit that day’s Stock Calculation Sheet, save it to the backend under their account, refresh the page without losing changes, and return to prior saved dates without seeing other users’ data.

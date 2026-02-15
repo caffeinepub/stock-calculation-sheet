@@ -46,6 +46,7 @@ export const CharacterSheet = IDL.Record({
   'abilities' : AbilityScores,
   'skills' : IDL.Vec(Skill),
 });
+export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
@@ -55,11 +56,30 @@ export const idlService = IDL.Service({
       [IDL.Vec(IDL.Tuple(IDL.Principal, CharacterSheet))],
       ['query'],
     ),
+  'getAllSnapshots' : IDL.Func(
+      [],
+      [
+        IDL.Vec(
+          IDL.Tuple(IDL.Principal, IDL.Vec(IDL.Tuple(IDL.Text, CharacterSheet)))
+        ),
+      ],
+      ['query'],
+    ),
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getSnapshotDates' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+  'getUserProfile' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(UserProfile)],
+      ['query'],
+    ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'isCharacterSheetSaved' : IDL.Func([], [IDL.Bool], ['query']),
   'loadSheet' : IDL.Func([], [CharacterSheet], ['query']),
+  'loadSnapshot' : IDL.Func([IDL.Text], [IDL.Opt(CharacterSheet)], ['query']),
+  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'saveSheet' : IDL.Func([CharacterSheet], [], []),
+  'saveSnapshot' : IDL.Func([IDL.Text, CharacterSheet], [], []),
 });
 
 export const idlInitArgs = [];
@@ -103,6 +123,7 @@ export const idlFactory = ({ IDL }) => {
     'abilities' : AbilityScores,
     'skills' : IDL.Vec(Skill),
   });
+  const UserProfile = IDL.Record({ 'name' : IDL.Text });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
@@ -112,11 +133,33 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Tuple(IDL.Principal, CharacterSheet))],
         ['query'],
       ),
+    'getAllSnapshots' : IDL.Func(
+        [],
+        [
+          IDL.Vec(
+            IDL.Tuple(
+              IDL.Principal,
+              IDL.Vec(IDL.Tuple(IDL.Text, CharacterSheet)),
+            )
+          ),
+        ],
+        ['query'],
+      ),
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getSnapshotDates' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+    'getUserProfile' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(UserProfile)],
+        ['query'],
+      ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'isCharacterSheetSaved' : IDL.Func([], [IDL.Bool], ['query']),
     'loadSheet' : IDL.Func([], [CharacterSheet], ['query']),
+    'loadSnapshot' : IDL.Func([IDL.Text], [IDL.Opt(CharacterSheet)], ['query']),
+    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'saveSheet' : IDL.Func([CharacterSheet], [], []),
+    'saveSnapshot' : IDL.Func([IDL.Text, CharacterSheet], [], []),
   });
 };
 

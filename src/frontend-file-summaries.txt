@@ -2,19 +2,20 @@
   "frontend/src/App.tsx": "Main app component that gates access with Internet Identity authentication, showing LoginScreen when unauthenticated and StockSheetPage when authenticated.",
   "frontend/src/components/LoginScreen.tsx": "Simple login screen component with a single \"Sign in with Internet Identity\" button.",
   "frontend/src/components/UserMenu.tsx": "User menu component with sign-out button that clears identity and React Query cache.",
-  "frontend/src/pages/StockSheetPage.tsx": "Main stock calculation sheet page with four editable sections (Opening Stock, Purchase, Sales, Suspense) in a 2x2 grid, Final Calculation display, save/print functionality, and automatic total calculations with optimized A5 single-page print layout.",
+  "frontend/src/pages/StockSheetPage.tsx": "Main stock calculation sheet page with date selector, four editable sections in a 2x2 grid, Final Calculation display, save/print functionality, automatic total calculations, and optimized A5 single-page print layout showing the selected date.",
   "frontend/src/components/SectionCard.tsx": "Reusable card component for wrapping each stock sheet section with title, content area, and total display using readable dark text colors for totals.",
   "frontend/src/components/EditableSheetTable.tsx": "Editable table component with inline editing that tracks local edit state for quantity fields to prevent mid-typing reformatting, commits normalized 3-decimal values on blur/Enter, and handles add/delete row functionality with print-friendly styling.",
   "frontend/src/components/FinalCalculation.tsx": "Final calculation display component showing all totals and computed closing stock value with readable dark text colors for all values.",
   "frontend/src/types/stockSheet.ts": "TypeScript type definitions for stock sheet data structures including rows, sheets, and table columns.",
   "frontend/src/utils/defaultSheetState.ts": "Factory function that generates default stock sheet state with required initial rows and quantities.",
   "frontend/src/utils/numberFormat.ts": "Utility functions for parsing, formatting, and validating numeric input with support for smooth 3-decimal editing (allows intermediate states like \"1.\" or \".5\" during typing, normalizes to 3 decimals on commit).",
-  "frontend/src/hooks/useStockSheet.ts": "React Query hook for loading and saving stock sheet data (currently using localStorage as temporary storage until backend is updated).",
+  "frontend/src/hooks/useStockSheet.ts": "React Query hooks for loading and saving stock sheet data via backend actor with date-based snapshots, including conversion between frontend StockSheet and backend CharacterSheet types, plus a hook for fetching all saved snapshot dates.",
   "frontend/src/index.css": "Global styles with OKLCH color system and comprehensive print media queries optimized for A5 single-page output with aggressive scaling (0.85), minimal spacing, compact fonts (6-9px), and strict page-break prevention to fit all content on one sheet.",
   "frontend/tailwind.config.js": "Tailwind configuration with custom fonts (Inter, JetBrains Mono) and extended design tokens.",
   "frontend/src/components/ui/button.tsx": "Shadcn button component with multiple variants and sizes.",
   "frontend/src/components/ui/card.tsx": "Shadcn card component with header, content, footer, and action sections.",
   "frontend/src/components/ui/input.tsx": "Shadcn input component for form fields.",
   "frontend/src/components/ui/table.tsx": "Shadcn table component with header, body, footer, row, and cell elements.",
-  "frontend/src/lib/utils.ts": "Utility function for merging Tailwind classes with clsx and tailwind-merge."
+  "frontend/src/lib/utils.ts": "Utility function for merging Tailwind classes with clsx and tailwind-merge.",
+  "frontend/src/utils/dateKey.ts": "Utility functions for generating, formatting, parsing, and validating stable date keys in YYYY-MM-DD format for snapshot storage."
 }

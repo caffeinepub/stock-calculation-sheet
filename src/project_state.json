@@ -1,18 +1,20 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 9,
+  "projectStateVersion": 11,
   "summary": "Build a simple responsive web app called \"Stock Calculation Sheet\" that mirrors an Excel-style stock calculator with 5 editable sections, automatic totals, closing stock calculation, 3-decimal quantity formatting, and a login system.",
   "architectural_notes": [
     "All quantity/weight inputs and displayed totals should use fixed 3-decimal formatting (0.000).",
     "Totals and closing stock must recalculate automatically when any row value changes.",
     "Layout should be responsive and visually similar to a simple Excel sheet.",
     "Printing should use print-only CSS to force a single-page A5 output (e.g., @page size A5, controlled margins) and scale/layout (side-by-side tables with manageable gaps) so all content fits on one page without changing the normal on-screen layout.",
-    "Quantity/weight inputs must allow user entry and display values to exactly 3 decimal places (0.000) consistently across all fields and totals."
+    "Quantity/weight inputs must allow user entry and display values to exactly 3 decimal places (0.000) consistently across all fields and totals.",
+    "Support storing and retrieving sheet state by date (e.g., daily snapshots) to allow users to access historical data."
   ],
   "known_issues": [
     "Totals below each section are not visible because the totals text color is white; change totals text to black (or otherwise ensure sufficient contrast).",
     "Number formatting is incorrect; inputs and displayed values are not consistently using 3-decimal (0.000) formatting as required.",
-    "Current print layout is unacceptable; the full table content is not fitting onto a single A5 sheet as required."
+    "Current print layout is unacceptable; the full table content is not fitting onto a single A5 sheet as required.",
+    "Save button does not persist data; clicking Save does not actually store the current sheet state."
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -143,6 +145,22 @@
         "REQ-18"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-fix-the-stock-calculation-sheet-save-behavior-so-that-clicking-the-save-button-persists-the-currently-edited-sheet-for-the-logged-in-user-in-the-motoko-backend-not-localstorage-and-reloading-the-page-restores-the-saved-data",
+      "title": "Fix the Stock Calculation Sheet Save behavior so that clicking the Save button persists the currently edited sheet for the logged-in user in the Motoko backend (not localStorage), and reloading the page restores the saved data.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-date-selector-to-the-stock-calculation-sheet-page-so-the-user-can-navigate-to-a-specific-date-load-that-date-s-saved-sheet-edit-it-and-save-updates-back-to-that-same-selected-date",
+      "title": "Add a date selector to the Stock Calculation Sheet page so the user can navigate to a specific date, load that date’s saved sheet, edit it, and save updates back to that same selected date.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -219,6 +237,20 @@
       "summary": "Build and deploy the updated application so the new A5 single-page print layout and side-by-side print arrangement are live.",
       "reqIds": [
         "REQ-16"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Add date-based history so users can select a past date and load that day’s saved Stock Calculation Sheet data (daily snapshots/versioning).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Add backend support for date-based Stock Calculation Sheet snapshots per user: save and load a sheet for a specific date, and list the dates that have saved data for the current user.",
+      "reqIds": [
+        "REQ-20"
       ],
       "status": "pending"
     }

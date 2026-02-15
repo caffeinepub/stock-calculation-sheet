@@ -1,54 +1,54 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix 3-decimal quantity input UX and ensure single-page A5 print output",
+  "title": "Fix sheet persistence via backend and add date-based sheet history UI",
   "requirements": [
     {
-      "id": "REQ-17",
-      "summary": "Make quantity inputs editable without mid-typing reformatting while normalizing and displaying exactly 3 decimals on commit across all sections and totals.",
+      "id": "REQ-19",
+      "summary": "Persist Stock Calculation Sheet save/load in the backend per authenticated user (no localStorage) and show errors on failures.",
       "acceptanceCriteria": [
-        "In all quantity cells (Opening Stock, Purchase, Sales, Suspense), the user can type without the input constantly reformatting mid-edit (e.g., typing \"1.\", \".5\", \"10.2\" is possible during editing).",
-        "When a quantity input loses focus (or on explicit commit), the stored value is normalized and the displayed value becomes exactly 3 decimals (e.g., \"1\" -> \"1.000\", \"1.2\" -> \"1.200\", \"1.23456\" -> \"1.235\").",
-        "Totals displayed in section footers and in Final Calculation remain consistent with the underlying numeric values and always display exactly three decimals.",
-        "Invalid/empty quantity input is handled safely (no NaN shown); it resolves to 0.000 after commit while preserving a usable typing experience."
+        "After editing any values and clicking Save, refreshing the page keeps the saved values (no reset to defaults).",
+        "Saving is scoped to the authenticated Internet Identity Principal (different users do not see each other’s data).",
+        "Frontend no longer uses localStorage as the primary persistence layer for sheet save/load.",
+        "If the backend save call fails, the UI shows an English error message and does not silently succeed."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/utils/numberFormat.ts",
+          "path": "frontend/src/hooks/useStockSheet.ts",
           "operation": "modify",
-          "description": "Extend numeric helpers to support a smooth 3-decimal input workflow: add safe \"intermediate\" decimal validation for user typing (e.g., allow \"\", \".\", \"1.\", \".5\"), and add a commit/normalize helper that converts to a finite number, rounds to 3 decimals, and guarantees formatting compatibility with formatNumber (toFixed(3))."
-        },
-        {
-          "path": "frontend/src/components/EditableSheetTable.tsx",
-          "operation": "modify",
-          "description": "Refactor quantity cell editing to avoid reformatting while the user types: keep a local string edit state per cell (or per row) for quantity fields, update that string onChange, and commit onBlur/Enter by normalizing to a 3-decimal numeric value (invalid/empty -> 0). Ensure the rendered value uses the raw edit string during focus and uses formatNumber(row.quantity) after commit, so totals and stored values remain numeric and consistent."
+          "description": "Replace localStorage-backed load/save with backend actor calls for loading and saving the caller’s sheet data (per Principal) using the existing actor capability; ensure errors are surfaced to the caller (do not swallow failures) and React Query cache is updated/invalidated appropriately. Use the selected \"authorization\" component expectations for authenticated access and handling authorization-related traps gracefully in UI flows; verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/pages/StockSheetPage.tsx",
           "operation": "modify",
-          "description": "Verify all displayed totals and section totals continue to use formatNumber on the numeric totals, and ensure any quantity-related props/columns remain consistent with the new commit-based input behavior (no NaN propagation, always 3-decimal display for totals)."
+          "description": "Wire Save to the updated backend-backed save function, ensure initial load comes from the backend-backed query (fall back to the existing default sheet state only when backend returns no data), and show a clear English error message when saving fails (no silent success). Keep existing print/A5 behavior unchanged aside from any non-print UI changes needed later; verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-18",
-      "summary": "Adjust print-only styling and layout so the full Stock Calculation Sheet prints on exactly one A5 page without clipping or unwanted page breaks.",
+      "id": "REQ-21",
+      "summary": "Add a date selector that loads/saves Stock Calculation Sheet snapshots for the selected date with proper loading/saving states.",
       "acceptanceCriteria": [
-        "Printing uses A5 paper size and produces exactly one page under normal browser print dialogs (Chrome/Edge) without requiring user scaling settings.",
-        "All sections are fully visible on the single printed page: Opening Stock, Purchase, Sales, Suspense tables (including their totals rows) and the Final Calculation card; no table rows or totals are clipped.",
-        "Print-only scaling/shrinking (if used) affects only print output and does not change the on-screen layout.",
-        "No unwanted page breaks occur inside any of the four tables or inside the Final Calculation section."
+        "The page provides a clear date selection control (English labels) that defaults to today’s date.",
+        "Changing the selected date reloads the sheet data for that date from the backend and updates all four editable sections and the Final Calculation accordingly.",
+        "Clicking Save saves the currently displayed sheet to the currently selected date (not always to “today”).",
+        "The UI indicates loading/saving states appropriately while switching dates and while saving."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/index.css",
+          "path": "frontend/src/utils/dateKey.ts",
+          "operation": "create",
+          "description": "Add a small utility to produce and validate a stable, text-based date key (e.g., 'YYYY-MM-DD') for use by the date selector and snapshot load/save calls."
+        },
+        {
+          "path": "frontend/src/hooks/useStockSheet.ts",
           "operation": "modify",
-          "description": "Tighten and harden A5 print CSS to reliably fit on a single page: keep @page size A5; override any container/max-width/padding in print to prevent horizontal overflow; reduce print paddings/margins/gaps where needed; enforce no-break rules for each section card, tables, totals rows, and final calculation; and apply print-only scaling (e.g., zoom/transform) only within @media print so on-screen layout is unchanged."
+          "description": "Extend the hook to support snapshot-based operations: (1) list available saved dates for the caller, (2) load a sheet for a selected date key, and (3) save updates back to that same selected date key. Provide distinct loading state for date switching vs initial load, and keep save state for the save button; verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/pages/StockSheetPage.tsx",
           "operation": "modify",
-          "description": "Add/adjust a print-specific wrapper class around the sheet content (grid + final calculation) to give the print stylesheet a single, reliable hook for one-page A5 fitting (e.g., controlling print width, spacing, and any print-only scale). Ensure this wiring affects only print output."
+          "description": "Add a non-print (print:hidden) date selection control in the header with English labeling that defaults to today, triggers reload on change, and ensures Save writes to the currently selected date. Update the print header date display to reflect the selected date (without changing existing print/A5 layout beyond that). Show appropriate loading indicators while switching dates and while saving; verify the component's usage instructions before implementing."
         }
       ]
     }
