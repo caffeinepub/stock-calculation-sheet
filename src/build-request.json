@@ -1,76 +1,56 @@
 {
   "kind": "build_request",
-  "title": "Fix Save persistence and add date-based sheet history",
+  "title": "Fix quantity input UX: show placeholder instead of 0.000 and commit whole numbers as .000",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-19",
-      "text": "Fix the Stock Calculation Sheet Save behavior so that clicking the Save button persists the currently edited sheet for the logged-in user in the Motoko backend (not localStorage), and reloading the page restores the saved data.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-20"
-        ],
-        "quotes": [
-          "data is not been saved when i click on the save buttuon"
-        ]
-      },
-      "acceptanceCriteria": [
-        "After editing any values and clicking Save, refreshing the page keeps the saved values (no reset to defaults).",
-        "Saving is scoped to the authenticated Internet Identity Principal (different users do not see each other’s data).",
-        "Frontend no longer uses localStorage as the primary persistence layer for sheet save/load.",
-        "If the backend save call fails, the UI shows an English error message and does not silently succeed."
-      ]
-    },
-    {
-      "id": "REQ-20",
-      "text": "Add backend support for date-based Stock Calculation Sheet snapshots per user: save and load a sheet for a specific date, and list the dates that have saved data for the current user.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-20"
-        ],
-        "quotes": [
-          "need a way to go back on dates and access that days data"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend exposes methods to: (1) save a Stock Calculation Sheet for a given date, (2) load a Stock Calculation Sheet for a given date, and (3) list available saved dates for the caller.",
-        "Dates are represented as a stable, text-based key (e.g., ISO-like 'YYYY-MM-DD') and are stored per Principal.",
-        "If no saved data exists for a requested date, backend returns the default Stock Calculation Sheet state (same defaults the frontend currently uses).",
-        "Data survives canister upgrades (use stable state + upgrade hooks as needed under the single-actor architecture)."
-      ]
-    },
-    {
-      "id": "REQ-21",
-      "text": "Add a date selector to the Stock Calculation Sheet page so the user can navigate to a specific date, load that date’s saved sheet, edit it, and save updates back to that same selected date.",
+      "id": "REQ-26",
+      "text": "Update all quantity/weight input cells so they do not appear pre-filled with the value \"0.000\" when the stored numeric value is zero; instead, show an empty input with a \"0.000\" placeholder until the user types a value.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-20"
+          "msg-4"
         ],
         "quotes": [
-          "need a way to go back on dates and access that days data"
+          "there is a premade input of weight 0.000 i have to erase that every time i enter weight fix that (just show me the placeholder)"
         ]
       },
       "acceptanceCriteria": [
-        "The page provides a clear date selection control (English labels) that defaults to today’s date.",
-        "Changing the selected date reloads the sheet data for that date from the backend and updates all four editable sections and the Final Calculation accordingly.",
-        "Clicking Save saves the currently displayed sheet to the currently selected date (not always to “today”).",
-        "The UI indicates loading/saving states appropriately while switching dates and while saving."
+        "For any quantity/weight cell whose underlying value is 0, the input renders empty (value=\"\") when not actively being edited.",
+        "The input shows placeholder text \"0.000\" for empty quantity/weight cells.",
+        "Totals and calculations continue to treat an empty quantity/weight input as numeric 0.",
+        "Non-zero quantity/weight values still display as fixed 3-decimal numbers (e.g., 1.500) when not actively editing."
+      ]
+    },
+    {
+      "id": "REQ-27",
+      "text": "Ensure quantity/weight entry commits reliably even when the user does not type a decimal point: if the user enters a whole number (e.g., \"56\") and then commits the field (blur, Enter, or Save), it must be normalized and stored as 56.000 (3-decimal fixed precision).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "automatically conver number to .000 format if i dont give you the exact decimal (rg if my weight is 56 convert it to 56.000 by yourself) seems like the data is only saved after hitting ."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Typing \"56\" into a quantity/weight cell and pressing Enter commits the value as numeric 56.000 (and the UI displays it as 56.000 after commit).",
+        "Typing \"56\" into a quantity/weight cell and clicking outside (blur) commits the value as numeric 56.000 (and the UI displays it as 56.000 after commit).",
+        "Typing \"56\" into a quantity/weight cell and clicking the page-level Save button without manually typing a decimal point still saves 56.000 to the backend and the value is restored as 56.000 after reload.",
+        "The behavior works consistently across all four editable sections (Opening Stock, Purchase, Sales, Suspense)."
       ]
     }
   ],
   "constraints": [
-    "Respect the Internet Computer single-actor backend architecture; keep all Motoko logic in backend/main.mo.",
-    "Do not modify frontend immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui.",
-    "All user-facing text added/changed must be in English."
+    "Do not modify any files under frontend/src/components/ui (shadcn UI components are read-only).",
+    "Do not modify immutable paths listed in SYSTEM_CONTEXT (e.g., frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx).",
+    "Keep backend architecture as a single Motoko actor (no new backend services)."
   ],
   "nonGoals": [
-    "Do not add third-party auth providers (only Internet Identity).",
-    "Do not add real-time sync or collaboration features.",
-    "Do not implement external database storage (use canister stable storage only).",
-    "Do not change existing print/A5 layout behavior except where needed to accommodate the new date selector in the non-print UI."
+    "Do not change print layout/styling behavior.",
+    "Do not change the sheet data model, snapshot/date behavior, or backend persistence format.",
+    "Do not add new validations or error messages beyond what is required to fix placeholder/commit behavior."
   ],
   "imageRequirements": {
     "required": [],

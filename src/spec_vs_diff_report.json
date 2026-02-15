@@ -1,75 +1,34 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T13:58:17.409Z",
-  "summary": "Implemented a frontend date-key utility and introduced date-scoped React Query hooks/page state for loading/saving a sheet by selected date. Backend changes shown add per-caller sheet persistence and introduce an in-memory snapshots map, but the diff summary does not provide evidence for the required date-based backend APIs, default-on-miss behavior for date loads, or stable (upgrade-surviving) storage. Some backend modeling appears unrelated to the Stock Calculation Sheet domain (CharacterSheet/abilities/skills).",
+  "generatedAt": "2026-02-15T14:58:39.470Z",
+  "summary": "Diff implements local editing state for quantity cells, adds numeric input helpers (intermediate validation + normalization to 3 decimals), and introduces a table-level \"commitPendingEdits\" method that StockSheetPage calls before saving. However, the diff excerpt does not clearly show the actual quantity <Input> rendering logic needed to prove placeholder/empty rendering for zero values, and Save-time commit correctness is not fully evidenced because the save uses possibly-stale state variables.",
   "missing_requirements": [
     {
-      "id": "REQ-20",
-      "requirement": "Backend exposes methods to save a sheet for a given date, load a sheet for a given date, and list available saved dates for the caller.",
-      "reason": "The backend diff snippet shows only non-date methods `saveSheet(sheet)` and `loadSheet()` plus an unused `snapshots` map; no date-parameterized save/load methods or list-dates method are evidenced in the provided truncated content.",
+      "id": "REQ-26",
+      "requirement": "For any quantity/weight cell whose underlying value is 0, the input renders empty (value=\"\") when not actively being edited and shows placeholder text \"0.000\".",
+      "reason": "EditableSheetTable.tsx shows setting the editing value to '' on focus when currentValue===0, but the diff is truncated before the quantity Input render. There is no direct evidence in the visible diff that the rendered Input uses value=\"\" (when not editing) and placeholder=\"0.000\" for zero-valued cells.",
       "evidence": [
-        "backend/main.mo"
+        "frontend/src/components/EditableSheetTable.tsx (truncated)"
       ]
     },
     {
-      "id": "REQ-20",
-      "requirement": "If no saved data exists for a requested date, backend returns the default Stock Calculation Sheet state.",
-      "reason": "No backend method that accepts a date key is evidenced, so there is no shown logic to return defaults specifically when a requested date has no snapshot. The shown `loadSheet()` returns a default only for the non-date, single-sheet case.",
+      "id": "REQ-27",
+      "requirement": "Clicking the page-level Save button without typing a decimal point still saves whole-number input as 56.000 (3-decimal fixed precision) to the backend and restores as 56.000 after reload.",
+      "reason": "StockSheetPage calls commitPendingEdits() then uses setTimeout(() => saveSheet({openingStock,...}),0). The diff does not provide evidence that the state variables passed to saveSheet reflect the newly committed normalized quantities (React state updates are async and the closure may capture pre-commit arrays). Thus Save-time normalization/persistence is not conclusively implemented from the shown changes.",
       "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-20",
-      "requirement": "Data survives canister upgrades using stable state + upgrade hooks (single-actor architecture).",
-      "reason": "The diff summary does not show any `stable var` usage or `preupgrade`/`postupgrade` hooks for `sheets`/`snapshots`/profiles; the shown maps are plain `let` bindings which are not evidenced as upgrade-stable.",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-19",
-      "requirement": "If the backend save call fails, the UI shows an English error message and does not silently succeed.",
-      "reason": "While `useStockSheet` exposes `saveError` and `StockSheetPage` destructures it, the provided `StockSheetPage.tsx` snippet is truncated before any UI rendering of that error is shown, so the requirement is not evidenced as implemented.",
-      "evidence": [
-        "frontend/src/pages/StockSheetPage.tsx",
-        "frontend/src/hooks/useStockSheet.ts"
-      ]
-    },
-    {
-      "id": "REQ-21",
-      "requirement": "The UI indicates loading/saving states appropriately while switching dates and while saving.",
-      "reason": "A full-screen spinner for initial load is shown, but the diff snippet is truncated before showing any explicit saving indicator or any per-date-switch loading indicator in the date selector area; thus this is not fully evidenced.",
-      "evidence": [
-        "frontend/src/pages/StockSheetPage.tsx"
+        "frontend/src/pages/StockSheetPage.tsx (truncated)",
+        "frontend/src/components/EditableSheetTable.tsx (truncated)"
       ]
     }
   ],
-  "hallucinated_features": [
-    {
-      "description": "Backend introduces/uses a D&D-style `CharacterSheet` domain model (abilities, skills, combat stats, inventory) rather than a Stock Calculation Sheet snapshot model.",
-      "reason": "The BuildRequest is about a 'Stock Calculation Sheet' and date-based snapshots; the backend diff shows extensive character-RPG-oriented types and defaults, and the frontend hook converts between `CharacterSheet` and `StockSheet`, which is not requested by the BuildRequest.",
-      "evidence": [
-        "backend/main.mo",
-        "frontend/src/hooks/useStockSheet.ts"
-      ]
-    },
-    {
-      "description": "Added user profile storage and related authorization-guarded profile APIs (`UserProfile`, `getCallerUserProfile`, `getUserProfile`, `saveCallerUserProfile`).",
-      "reason": "User profiles are not mentioned in REQ-19/20/21 and are outside the requested save persistence/date-based sheet history scope.",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    }
-  ],
-  "confidence": 0.62,
+  "hallucinated_features": [],
+  "confidence": 0.54,
   "changed_files": [
-    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/hooks/useStockSheet.ts",
+    "frontend/src/components/EditableSheetTable.tsx",
     "frontend/src/pages/StockSheetPage.tsx",
-    "frontend/src/utils/dateKey.ts",
+    "frontend/src/utils/numberFormat.ts",
     "project_state.json"
   ]
 }

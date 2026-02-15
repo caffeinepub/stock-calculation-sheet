@@ -57,6 +57,7 @@ export interface _SERVICE {
   >,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getSelectedDate' : ActorMethod<[], [] | [string]>,
   'getSnapshotDates' : ActorMethod<[], Array<string>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
@@ -66,6 +67,8 @@ export interface _SERVICE {
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'saveSheet' : ActorMethod<[CharacterSheet], undefined>,
   'saveSnapshot' : ActorMethod<[string, CharacterSheet], undefined>,
+  'saveSnapshotForSelectedDate' : ActorMethod<[CharacterSheet], undefined>,
+  'updateSelectedDate' : ActorMethod<[string], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

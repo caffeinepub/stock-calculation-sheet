@@ -1,54 +1,54 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix sheet persistence via backend and add date-based sheet history UI",
+  "title": "Quantity input UX: empty-on-zero display + reliable whole-number commit (3 decimals)",
   "requirements": [
     {
-      "id": "REQ-19",
-      "summary": "Persist Stock Calculation Sheet save/load in the backend per authenticated user (no localStorage) and show errors on failures.",
+      "id": "REQ-26",
+      "summary": "Render quantity/weight cells as empty when the stored numeric value is 0, while showing a \"0.000\" placeholder and preserving numeric-0 behavior for calculations.",
       "acceptanceCriteria": [
-        "After editing any values and clicking Save, refreshing the page keeps the saved values (no reset to defaults).",
-        "Saving is scoped to the authenticated Internet Identity Principal (different users do not see each other’s data).",
-        "Frontend no longer uses localStorage as the primary persistence layer for sheet save/load.",
-        "If the backend save call fails, the UI shows an English error message and does not silently succeed."
+        "For any quantity/weight cell whose underlying value is 0, the input renders empty (value=\"\") when not actively being edited.",
+        "The input shows placeholder text \"0.000\" for empty quantity/weight cells.",
+        "Totals and calculations continue to treat an empty quantity/weight input as numeric 0.",
+        "Non-zero quantity/weight values still display as fixed 3-decimal numbers (e.g., 1.500) when not actively editing."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useStockSheet.ts",
+          "path": "frontend/src/components/EditableSheetTable.tsx",
           "operation": "modify",
-          "description": "Replace localStorage-backed load/save with backend actor calls for loading and saving the caller’s sheet data (per Principal) using the existing actor capability; ensure errors are surfaced to the caller (do not swallow failures) and React Query cache is updated/invalidated appropriately. Use the selected \"authorization\" component expectations for authenticated access and handling authorization-related traps gracefully in UI flows; verify the component's usage instructions before implementing."
+          "description": "Adjust quantity cell rendering so that when not actively editing and the stored quantity is 0, the controlled input uses an empty string (\"\"), allowing the existing placeholder \"0.000\" to show. Ensure focus initializes editing with an empty string for zero-valued cells, while non-zero values still display formatted to 3 decimals when not editing. Keep calculations unchanged by continuing to store numeric 0 for committed empty inputs."
         },
         {
-          "path": "frontend/src/pages/StockSheetPage.tsx",
+          "path": "frontend/src/utils/numberFormat.ts",
           "operation": "modify",
-          "description": "Wire Save to the updated backend-backed save function, ensure initial load comes from the backend-backed query (fall back to the existing default sheet state only when backend returns no data), and show a clear English error message when saving fails (no silent success). Keep existing print/A5 behavior unchanged aside from any non-print UI changes needed later; verify the component's usage instructions before implementing."
+          "description": "Harden normalization utilities used by quantity inputs so empty/placeholder states normalize cleanly to numeric 0 on commit while preserving 3-decimal fixed-precision rounding behavior for non-empty inputs."
         }
       ]
     },
     {
-      "id": "REQ-21",
-      "summary": "Add a date selector that loads/saves Stock Calculation Sheet snapshots for the selected date with proper loading/saving states.",
+      "id": "REQ-27",
+      "summary": "Commit quantity/weight edits reliably on Enter, blur, and Save even when users type whole numbers, normalizing to 3-decimal precision (e.g., 56 -> 56.000) across all sections.",
       "acceptanceCriteria": [
-        "The page provides a clear date selection control (English labels) that defaults to today’s date.",
-        "Changing the selected date reloads the sheet data for that date from the backend and updates all four editable sections and the Final Calculation accordingly.",
-        "Clicking Save saves the currently displayed sheet to the currently selected date (not always to “today”).",
-        "The UI indicates loading/saving states appropriately while switching dates and while saving."
+        "Typing \"56\" into a quantity/weight cell and pressing Enter commits the value as numeric 56.000 (and the UI displays it as 56.000 after commit).",
+        "Typing \"56\" into a quantity/weight cell and clicking outside (blur) commits the value as numeric 56.000 (and the UI displays it as 56.000 after commit).",
+        "Typing \"56\" into a quantity/weight cell and clicking the page-level Save button without manually typing a decimal point still saves 56.000 to the backend and the value is restored as 56.000 after reload.",
+        "The behavior works consistently across all four editable sections (Opening Stock, Purchase, Sales, Suspense)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/utils/dateKey.ts",
-          "operation": "create",
-          "description": "Add a small utility to produce and validate a stable, text-based date key (e.g., 'YYYY-MM-DD') for use by the date selector and snapshot load/save calls."
-        },
-        {
-          "path": "frontend/src/hooks/useStockSheet.ts",
+          "path": "frontend/src/components/EditableSheetTable.tsx",
           "operation": "modify",
-          "description": "Extend the hook to support snapshot-based operations: (1) list available saved dates for the caller, (2) load a sheet for a selected date key, and (3) save updates back to that same selected date key. Provide distinct loading state for date switching vs initial load, and keep save state for the save button; verify the component's usage instructions before implementing."
+          "description": "Ensure quantity edits are normalized and committed for whole-number input (e.g., \"56\") and other valid intermediate states on Enter and blur using the existing normalization flow. Add a parent-invokable way to force-commit any currently edited quantity cell (e.g., via a ref/imperative handle or a commit callback) so Save can flush pending edits before persisting."
         },
         {
           "path": "frontend/src/pages/StockSheetPage.tsx",
           "operation": "modify",
-          "description": "Add a non-print (print:hidden) date selection control in the header with English labeling that defaults to today, triggers reload on change, and ensures Save writes to the currently selected date. Update the print header date display to reflect the selected date (without changing existing print/A5 layout beyond that). Show appropriate loading indicators while switching dates and while saving; verify the component's usage instructions before implementing."
+          "description": "Wire Save to force-commit any active/pending quantity edit in each of the four EditableSheetTable instances (Opening Stock, Purchase, Sales, Suspense) before calling saveSheet, preventing cases where clicking Save occurs before the input’s blur-commit runs. Ensure the resulting saved and reloaded values display as fixed 3-decimal numbers."
+        },
+        {
+          "path": "frontend/src/utils/numberFormat.ts",
+          "operation": "modify",
+          "description": "Confirm normalize-to-3-decimals behavior consistently converts whole numbers (\"56\") to numeric values that display as 56.000 after commit and round to 3 decimals when fractional input is provided."
         }
       ]
     }

@@ -2,12 +2,13 @@ import Map "mo:core/Map";
 import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
 import Array "mo:core/Array";
-import Iter "mo:core/Iter";
 import Text "mo:core/Text";
 import List "mo:core/List";
-
+import Iter "mo:core/Iter";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+
+
 
 actor {
   // Authorization system
@@ -20,6 +21,9 @@ actor {
   };
 
   let userProfiles = Map.empty<Principal, UserProfile>();
+
+  // New backend-side date selection tracking
+  let selectedDateMap = Map.empty<Principal, Text>(); // Tracks last selected date per user
 
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
@@ -156,9 +160,42 @@ actor {
     sheets.containsKey(caller);
   };
 
+  public shared ({ caller }) func updateSelectedDate(date : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only logged-in users can select a date");
+    };
+    selectedDateMap.add(caller, date);
+  };
+
+  public query ({ caller }) func getSelectedDate() : async ?Text {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only logged-in users can get selected date");
+    };
+    selectedDateMap.get(caller);
+  };
+
   public shared ({ caller }) func saveSnapshot(date : Text, sheet : CharacterSheet) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only logged-in users can manage snapshots");
+    };
+
+    let userSnapshots = switch (snapshots.get(caller)) {
+      case (?existing) { existing };
+      case (null) { Map.empty<Text, CharacterSheet>() };
+    };
+
+    userSnapshots.add(date, sheet);
+    snapshots.add(caller, userSnapshots);
+  };
+
+  public shared ({ caller }) func saveSnapshotForSelectedDate(sheet : CharacterSheet) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only logged-in users can save snapshots");
+    };
+
+    let date = switch (selectedDateMap.get(caller)) {
+      case (?d) { d };
+      case (null) { Runtime.trap("No date selected for current user") };
     };
 
     let userSnapshots = switch (snapshots.get(caller)) {

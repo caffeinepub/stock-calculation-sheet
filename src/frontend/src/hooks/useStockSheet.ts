@@ -5,34 +5,36 @@ import type { CharacterSheet } from '../backend';
 import { getDefaultSheetState } from '../utils/defaultSheetState';
 
 // Convert backend CharacterSheet to frontend StockSheet
+// Backend stores values as integers (multiplied by 1000 to preserve 3 decimals)
 function backendToFrontend(sheet: CharacterSheet): StockSheet {
   return {
     openingStock: sheet.inventory.slice(0, 7).map(item => ({
       name: item.name,
-      quantity: Number(item.quantity),
+      quantity: Number(item.quantity) / 1000,
     })),
     purchase: sheet.skills.slice(0, 10).map(skill => ({
       name: skill.name,
-      quantity: Number(skill.modifier),
+      quantity: Number(skill.modifier) / 1000,
     })),
     sales: sheet.abilities ? [
-      { name: 'Strength', quantity: Number(sheet.abilities.strength) },
-      { name: 'Dexterity', quantity: Number(sheet.abilities.dexterity) },
-      { name: 'Constitution', quantity: Number(sheet.abilities.constitution) },
-      { name: 'Intelligence', quantity: Number(sheet.abilities.intelligence) },
-      { name: 'Wisdom', quantity: Number(sheet.abilities.wisdom) },
-      { name: 'Charisma', quantity: Number(sheet.abilities.charisma) },
+      { name: 'Strength', quantity: Number(sheet.abilities.strength) / 1000 },
+      { name: 'Dexterity', quantity: Number(sheet.abilities.dexterity) / 1000 },
+      { name: 'Constitution', quantity: Number(sheet.abilities.constitution) / 1000 },
+      { name: 'Intelligence', quantity: Number(sheet.abilities.intelligence) / 1000 },
+      { name: 'Wisdom', quantity: Number(sheet.abilities.wisdom) / 1000 },
+      { name: 'Charisma', quantity: Number(sheet.abilities.charisma) / 1000 },
     ] : [],
     suspense: [
-      { name: 'Hit Points', quantity: Number(sheet.combatStats.hitPoints) },
-      { name: 'Speed', quantity: Number(sheet.combatStats.speed) },
-      { name: 'Armor Class', quantity: Number(sheet.combatStats.baseArmorClass) },
-      { name: 'Initiative', quantity: Number(sheet.combatStats.initiative) },
+      { name: 'Hit Points', quantity: Number(sheet.combatStats.hitPoints) / 1000 },
+      { name: 'Speed', quantity: Number(sheet.combatStats.speed) / 1000 },
+      { name: 'Armor Class', quantity: Number(sheet.combatStats.baseArmorClass) / 1000 },
+      { name: 'Initiative', quantity: Number(sheet.combatStats.initiative) / 1000 },
     ],
   };
 }
 
 // Convert frontend StockSheet to backend CharacterSheet
+// Store values as integers (multiply by 1000 to preserve 3 decimals)
 function frontendToBackend(sheet: StockSheet): CharacterSheet {
   // Pad arrays to ensure we have enough items
   const paddedOpening = [...sheet.openingStock];
@@ -47,7 +49,7 @@ function frontendToBackend(sheet: StockSheet): CharacterSheet {
   
   const paddedSales = [...sheet.sales];
   while (paddedSales.length < 6) {
-    paddedSales.push({ name: 'Stat', quantity: 10 });
+    paddedSales.push({ name: 'Stat', quantity: 0 });
   }
   
   const paddedSuspense = [...sheet.suspense];
@@ -60,27 +62,27 @@ function frontendToBackend(sheet: StockSheet): CharacterSheet {
       name: row.name,
       description: '',
       weight: undefined,
-      quantity: BigInt(Math.round(row.quantity * 1000)) / 1000n,
+      quantity: BigInt(Math.round(row.quantity * 1000)),
     })),
     skills: paddedPurchase.map(row => ({
       name: row.name,
       associatedAbility: 'Purchase',
       isProficient: false,
-      modifier: BigInt(Math.round(row.quantity * 1000)) / 1000n,
+      modifier: BigInt(Math.round(row.quantity * 1000)),
     })),
     abilities: {
-      strength: BigInt(Math.round((paddedSales[0]?.quantity || 10) * 1000)) / 1000n,
-      dexterity: BigInt(Math.round((paddedSales[1]?.quantity || 10) * 1000)) / 1000n,
-      constitution: BigInt(Math.round((paddedSales[2]?.quantity || 10) * 1000)) / 1000n,
-      intelligence: BigInt(Math.round((paddedSales[3]?.quantity || 10) * 1000)) / 1000n,
-      wisdom: BigInt(Math.round((paddedSales[4]?.quantity || 10) * 1000)) / 1000n,
-      charisma: BigInt(Math.round((paddedSales[5]?.quantity || 10) * 1000)) / 1000n,
+      strength: BigInt(Math.round((paddedSales[0]?.quantity || 0) * 1000)),
+      dexterity: BigInt(Math.round((paddedSales[1]?.quantity || 0) * 1000)),
+      constitution: BigInt(Math.round((paddedSales[2]?.quantity || 0) * 1000)),
+      intelligence: BigInt(Math.round((paddedSales[3]?.quantity || 0) * 1000)),
+      wisdom: BigInt(Math.round((paddedSales[4]?.quantity || 0) * 1000)),
+      charisma: BigInt(Math.round((paddedSales[5]?.quantity || 0) * 1000)),
     },
     combatStats: {
-      hitPoints: BigInt(Math.round((paddedSuspense[0]?.quantity || 0) * 1000)) / 1000n,
-      speed: BigInt(Math.round((paddedSuspense[1]?.quantity || 0) * 1000)) / 1000n,
-      baseArmorClass: BigInt(Math.round((paddedSuspense[2]?.quantity || 0) * 1000)) / 1000n,
-      initiative: BigInt(Math.round((paddedSuspense[3]?.quantity || 0) * 1000)) / 1000n,
+      hitPoints: BigInt(Math.round((paddedSuspense[0]?.quantity || 0) * 1000)),
+      speed: BigInt(Math.round((paddedSuspense[1]?.quantity || 0) * 1000)),
+      baseArmorClass: BigInt(Math.round((paddedSuspense[2]?.quantity || 0) * 1000)),
+      initiative: BigInt(Math.round((paddedSuspense[3]?.quantity || 0) * 1000)),
       hitDice: '1d8',
     },
   };
@@ -127,6 +129,7 @@ export function useStockSheet(dateKey: string) {
     },
     onError: (error: any) => {
       console.error('Save error:', error);
+      throw error;
     },
   });
 
@@ -136,7 +139,8 @@ export function useStockSheet(dateKey: string) {
     isFetched: query.isFetched,
     saveSheet: saveMutation.mutate,
     isSaving: saveMutation.isPending,
-    saveError: saveMutation.error?.message,
+    saveError: saveMutation.error,
+    isSuccess: saveMutation.isSuccess,
   };
 }
 

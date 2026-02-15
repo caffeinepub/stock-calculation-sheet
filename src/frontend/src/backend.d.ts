@@ -54,6 +54,7 @@ export interface backendInterface {
     getAllSnapshots(): Promise<Array<[Principal, Array<[string, CharacterSheet]>]>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getSelectedDate(): Promise<string | null>;
     getSnapshotDates(): Promise<Array<string>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
@@ -63,4 +64,6 @@ export interface backendInterface {
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     saveSheet(sheet: CharacterSheet): Promise<void>;
     saveSnapshot(date: string, sheet: CharacterSheet): Promise<void>;
+    saveSnapshotForSelectedDate(sheet: CharacterSheet): Promise<void>;
+    updateSelectedDate(date: string): Promise<void>;
 }

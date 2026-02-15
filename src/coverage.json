@@ -1,65 +1,53 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T13:58:17.413Z",
+  "generatedAt": "2026-02-15T14:58:39.472Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
+    "total": 2,
     "implemented": 2,
     "items": [
       {
-        "id": "REQ-19",
-        "summary": "Fix the Stock Calculation Sheet Save behavior so that clicking the Save button persists the currently edited sheet for the logged-in user in the Motoko backend (not localStorage), and reloading the page restores the saved data.",
+        "id": "REQ-26",
+        "summary": "Update all quantity/weight input cells so they do not appear pre-filled with the value \"0.000\" when the stored numeric value is zero; instead, show an empty input with a \"0.000\" placeholder until the user types a value.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useStockSheet.ts",
-          "frontend/src/pages/StockSheetPage.tsx"
+          "frontend/src/components/EditableSheetTable.tsx",
+          "frontend/src/utils/numberFormat.ts"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useStockSheet.ts",
-          "frontend/src/pages/StockSheetPage.tsx"
+          "frontend/src/components/EditableSheetTable.tsx",
+          "frontend/src/utils/numberFormat.ts"
         ]
       },
       {
-        "id": "REQ-20",
-        "summary": "Add backend support for date-based Stock Calculation Sheet snapshots per user: save and load a sheet for a specific date, and list the dates that have saved data for the current user.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-21",
-        "summary": "Add a date selector to the Stock Calculation Sheet page so the user can navigate to a specific date, load that date’s saved sheet, edit it, and save updates back to that same selected date.",
+        "id": "REQ-27",
+        "summary": "Ensure quantity/weight entry commits reliably even when the user does not type a decimal point: if the user enters a whole number (e.g., \"56\") and then commits the field (blur, Enter, or Save), it must be normalized and stored as 56.000 (3-decimal fixed precision).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/utils/dateKey.ts",
-          "frontend/src/hooks/useStockSheet.ts",
-          "frontend/src/pages/StockSheetPage.tsx"
+          "frontend/src/components/EditableSheetTable.tsx",
+          "frontend/src/pages/StockSheetPage.tsx",
+          "frontend/src/utils/numberFormat.ts"
         ],
         "matchedFiles": [
-          "frontend/src/utils/dateKey.ts",
-          "frontend/src/hooks/useStockSheet.ts",
-          "frontend/src/pages/StockSheetPage.tsx"
+          "frontend/src/components/EditableSheetTable.tsx",
+          "frontend/src/pages/StockSheetPage.tsx",
+          "frontend/src/utils/numberFormat.ts"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useStockSheet.ts",
+    "frontend/src/components/EditableSheetTable.tsx",
     "frontend/src/pages/StockSheetPage.tsx",
-    "frontend/src/utils/dateKey.ts",
+    "frontend/src/utils/numberFormat.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

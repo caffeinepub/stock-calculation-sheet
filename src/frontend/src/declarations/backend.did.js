@@ -67,6 +67,7 @@ export const idlService = IDL.Service({
     ),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getSelectedDate' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
   'getSnapshotDates' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
@@ -80,6 +81,8 @@ export const idlService = IDL.Service({
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'saveSheet' : IDL.Func([CharacterSheet], [], []),
   'saveSnapshot' : IDL.Func([IDL.Text, CharacterSheet], [], []),
+  'saveSnapshotForSelectedDate' : IDL.Func([CharacterSheet], [], []),
+  'updateSelectedDate' : IDL.Func([IDL.Text], [], []),
 });
 
 export const idlInitArgs = [];
@@ -147,6 +150,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getSelectedDate' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
     'getSnapshotDates' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
@@ -160,6 +164,8 @@ export const idlFactory = ({ IDL }) => {
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'saveSheet' : IDL.Func([CharacterSheet], [], []),
     'saveSnapshot' : IDL.Func([IDL.Text, CharacterSheet], [], []),
+    'saveSnapshotForSelectedDate' : IDL.Func([CharacterSheet], [], []),
+    'updateSelectedDate' : IDL.Func([IDL.Text], [], []),
   });
 };
 

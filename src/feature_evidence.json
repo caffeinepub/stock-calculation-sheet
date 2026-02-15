@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-fix-the-stock-calculation-sheet-save-behavior-so-that-clicking-the-save-button-persists-the-currently-edited-sheet-for-the-logged-in-user-in-the-motoko-backend-not-localstorage-and-reloading-the-page-restores-the-saved-data",
-      "featureTitle": "Fix the Stock Calculation Sheet Save behavior so that clicking the Save button persists the currently edited sheet for the logged-in user in the Motoko backend (not localStorage), and reloading the page restores the saved data.",
+      "featureId": "feature-update-all-quantity-weight-input-cells-so-they-do-not-appear-pre-filled-with-the-value-0-000-when-the-stored-numeric-value-is-zero-instead-show-an-empty-input-with-a-0-000-placeholder-until-the-user-types-a-value",
+      "featureTitle": "Update all quantity/weight input cells so they do not appear pre-filled with the value \"0.000\" when the stored numeric value is zero; instead, show an empty input with a \"0.000\" placeholder until the user types a value.",
       "files": [
-        "frontend/src/hooks/useStockSheet.ts",
-        "frontend/src/pages/StockSheetPage.tsx"
+        "frontend/src/components/EditableSheetTable.tsx",
+        "frontend/src/utils/numberFormat.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -17,17 +17,17 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-19"
+        "REQ-26"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-date-selector-to-the-stock-calculation-sheet-page-so-the-user-can-navigate-to-a-specific-date-load-that-date-s-saved-sheet-edit-it-and-save-updates-back-to-that-same-selected-date",
-      "featureTitle": "Add a date selector to the Stock Calculation Sheet page so the user can navigate to a specific date, load that date’s saved sheet, edit it, and save updates back to that same selected date.",
+      "featureId": "feature-ensure-quantity-weight-entry-commits-reliably-even-when-the-user-does-not-type-a-decimal-point-if-the-user-enters-a-whole-number-e-g-56-and-then-commits-the-field-blur-enter-or-save-it-must-be-normalized-and-stored-as-56-000-3-decimal-fixed-precision",
+      "featureTitle": "Ensure quantity/weight entry commits reliably even when the user does not type a decimal point: if the user enters a whole number (e.g., \"56\") and then commits the field (blur, Enter, or Save), it must be normalized and stored as 56.000 (3-decimal fixed precision).",
       "files": [
-        "frontend/src/hooks/useStockSheet.ts",
+        "frontend/src/components/EditableSheetTable.tsx",
         "frontend/src/pages/StockSheetPage.tsx",
-        "frontend/src/utils/dateKey.ts"
+        "frontend/src/utils/numberFormat.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -38,7 +38,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-21"
+        "REQ-27"
       ],
       "confidence": "high"
     }

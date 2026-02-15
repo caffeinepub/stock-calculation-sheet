@@ -20,11 +20,19 @@ export function isValidIntermediateInput(value: string): boolean {
 }
 
 // Normalize and round input to 3 decimals on commit
+// Handles empty strings, whole numbers, and decimal inputs
 export function normalizeToThreeDecimals(value: string): number {
+  // Handle empty string as 0
+  if (value === '' || value === '.' || value === '-' || value === '-.') {
+    return 0;
+  }
+  
   const parsed = parseFloat(value);
   if (isNaN(parsed) || !isFinite(parsed)) {
     return 0;
   }
+  
   // Round to 3 decimal places
+  // This ensures "56" becomes 56.000, "56.1" becomes 56.100, etc.
   return Math.round(parsed * 1000) / 1000;
 }

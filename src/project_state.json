@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 11,
+  "projectStateVersion": 19,
   "summary": "Build a simple responsive web app called \"Stock Calculation Sheet\" that mirrors an Excel-style stock calculator with 5 editable sections, automatic totals, closing stock calculation, 3-decimal quantity formatting, and a login system.",
   "architectural_notes": [
     "All quantity/weight inputs and displayed totals should use fixed 3-decimal formatting (0.000).",
@@ -8,13 +8,19 @@
     "Layout should be responsive and visually similar to a simple Excel sheet.",
     "Printing should use print-only CSS to force a single-page A5 output (e.g., @page size A5, controlled margins) and scale/layout (side-by-side tables with manageable gaps) so all content fits on one page without changing the normal on-screen layout.",
     "Quantity/weight inputs must allow user entry and display values to exactly 3 decimal places (0.000) consistently across all fields and totals.",
-    "Support storing and retrieving sheet state by date (e.g., daily snapshots) to allow users to access historical data."
+    "Support storing and retrieving sheet state by date (e.g., daily snapshots) to allow users to access historical data.",
+    "Initialize default rows in all sections with quantity/weight = 0.000 (3-decimal formatted) so the user can enter values manually.",
+    "Support efficient keyboard-only data entry: Enter should advance focus Name -> Quantity, then to next row, auto-creating a new row at end when needed.",
+    "Numeric quantity/weight inputs should not be prefilled with \"0.000\"; instead show a placeholder (e.g., \"0.000\") and treat empty input as 0.000 for calculations.",
+    "On commit (blur/Enter), normalize numeric input to fixed 3-decimal format (e.g., \"56\" -> \"56.000\") without requiring the user to type a decimal point."
   ],
   "known_issues": [
     "Totals below each section are not visible because the totals text color is white; change totals text to black (or otherwise ensure sufficient contrast).",
     "Number formatting is incorrect; inputs and displayed values are not consistently using 3-decimal (0.000) formatting as required.",
     "Current print layout is unacceptable; the full table content is not fitting onto a single A5 sheet as required.",
-    "Save button does not persist data; clicking Save does not actually store the current sheet state."
+    "Save button does not persist data; clicking Save does not actually store the current sheet state.",
+    "Quantity/weight inputs are prefilled with \"0.000\", forcing users to erase it each time; should use a placeholder instead.",
+    "Numeric entry/normalization appears to only commit/save after typing a '.'; entering whole numbers (e.g., 56) should auto-convert/commit as 56.000."
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -161,6 +167,54 @@
         "REQ-21"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-change-the-app-s-default-sheet-state-so-that-all-pre-populated-quantity-weight-values-in-every-section-opening-stock-purchase-sales-suspense-start-at-0-000-instead-of-non-zero-values-so-users-can-enter-all-values-manually",
+      "title": "Change the app’s default sheet state so that all pre-populated quantity/weight values in every section (Opening Stock, Purchase, Sales, Suspense) start at 0.000 instead of non-zero values, so users can enter all values manually.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-save-button-so-that-saving-the-currently-selected-date-reliably-persists-the-current-stock-calculation-sheet-for-the-logged-in-user-and-reloading-the-app-restores-the-saved-data-for-that-same-date",
+      "title": "Fix the Save button so that saving the currently selected date reliably persists the current Stock Calculation Sheet for the logged-in user, and reloading the app restores the saved data for that same date.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-export-to-excel-button-in-the-header-next-to-the-existing-print-button-that-exports-the-currently-displayed-sheet-for-the-currently-selected-date-and-downloads-it-in-the-user-s-browser-as-an-excel-compatible-file",
+      "title": "Add an \"Export to Excel\" button in the header next to the existing Print button that exports the currently displayed sheet (for the currently selected date) and downloads it in the user’s browser as an Excel-compatible file.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-editable-sheet-table-keyboard-behavior-so-enter-key-moves-focus-logically-between-cells-and-rows-1-when-the-user-presses-enter-while-focused-in-the-text-cell-item-name-party-name-move-focus-to-the-corresponding-numeric-cell-weight-quantity-in-the-same-row-2-when-the-user-presses-enter-while-focused-in-the-numeric-cell-commit-normalize-the-numeric-value-same-as-current-blur-behavior-then-move-focus-to-the-text-cell-in-the-next-row-3-if-the-user-presses-enter-in-the-numeric-cell-on-the-last-existing-row-automatically-add-a-new-row-and-move-focus-to-the-new-row-s-text-cell",
+      "title": "Update the editable sheet table keyboard behavior so Enter key moves focus logically between cells and rows: (1) When the user presses Enter while focused in the text cell (Item Name / Party Name), move focus to the corresponding numeric cell (Weight / Quantity) in the same row. (2) When the user presses Enter while focused in the numeric cell, commit/normalize the numeric value (same as current blur behavior), then move focus to the text cell in the next row. (3) If the user presses Enter in the numeric cell on the last existing row, automatically add a new row and move focus to the new row’s text cell.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-all-quantity-weight-input-cells-so-they-do-not-appear-pre-filled-with-the-value-0-000-when-the-stored-numeric-value-is-zero-instead-show-an-empty-input-with-a-0-000-placeholder-until-the-user-types-a-value",
+      "title": "Update all quantity/weight input cells so they do not appear pre-filled with the value \"0.000\" when the stored numeric value is zero; instead, show an empty input with a \"0.000\" placeholder until the user types a value.",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-quantity-weight-entry-commits-reliably-even-when-the-user-does-not-type-a-decimal-point-if-the-user-enters-a-whole-number-e-g-56-and-then-commits-the-field-blur-enter-or-save-it-must-be-normalized-and-stored-as-56-000-3-decimal-fixed-precision",
+      "title": "Ensure quantity/weight entry commits reliably even when the user does not type a decimal point: if the user enters a whole number (e.g., \"56\") and then commits the field (blur, Enter, or Save), it must be normalized and stored as 56.000 (3-decimal fixed precision).",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -252,6 +306,24 @@
       "reqIds": [
         "REQ-20"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Change all default quantity/weight values in the initial rows across sections to 0.000 (instead of current non-zero defaults), so users enter values manually.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Add an \"Export to Excel\" button near Print that downloads the current sheet data as an Excel file to the user's device.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "Keyboard Enter navigation in table rows: pressing Enter in Item/Party Name moves focus to corresponding Weight/Quantity; pressing Enter in Weight/Quantity moves to next row and auto-adds a new row if needed",
+      "reqIds": [],
       "status": "pending"
     }
   ],
